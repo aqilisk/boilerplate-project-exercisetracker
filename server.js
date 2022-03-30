@@ -80,9 +80,8 @@ app.get('/api/users/:_id/logs', async (req, res) => {
   const to = new Date(req.query.to).toDateString();
   const limit = parseInt(req.query.limit);
   try {
-    const result = await User.findById(id, '_id username log count', {
-      from: from, to: to, limit: limit
-    });
+    const result = await User.findById(id, '_id username log count', { limit: limit })
+      .elemMatch('log', { date: { $gte: from, $lte: to } });
     const count = result.log.length;
     const data = { ...result._doc, count }
     res.json(data);
