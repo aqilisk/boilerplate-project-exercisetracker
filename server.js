@@ -76,9 +76,9 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
 
 app.get('/api/users/:_id/logs', async (req, res) => {
   const id = req.params._id;
-  const from = new Date(req.params.from).toDateString();
-  const to = new Date(req.params.to).toDateString();
-  const limit = parseInt(req.params.limit)
+  const from = new Date(req.query.from).toDateString();
+  const to = new Date(req.query.to).toDateString();
+  const limit = parseInt(req.query.limit);
   try {
     const result = await User.findById(id, '_id username log count', {
       from: from, to: to, limit: limit
