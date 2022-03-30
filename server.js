@@ -76,12 +76,28 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
 
 app.get('/api/users/:_id/logs', async (req, res) => {
   const id = req.params._id;
-  const from = new Date(req.query.from).toDateString();
-  const to = new Date(req.query.to).toDateString();
-  const limit = parseInt(req.query.limit);
+  let from = null;
+  let to = null;
+  let limit = null;
+  if (req.query.from || req.query.to || req.query.limit) {
+    console.log(req.query)
+    from = new Date(req.query.from).toDateString();
+    to = new Date(req.query.to).toDateString();
+    limit = parseInt(req.query.limit);
+  }
+  console.log(from, to, limit)
   try {
-    const result = await User.findById(id, '_id username log count', { limit: limit })
-      .elemMatch('log', { date: { $gte: from, $lte: to } });
+    let result;
+    if (from || to || limit) {
+      console.log('in limit')
+      result = await User.findById(id, '_id username log count')
+      .slice('log', limit)
+      .elemMatch('log', { log: { date: { $gte: from, $lte: to } } });
+    } else {
+      console.log('no limit')
+      result = await User.findById(id, '_id username log count');
+    }
+
     const count = result.log.length;
     const data = { ...result._doc, count }
     res.json(data);
