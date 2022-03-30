@@ -4,7 +4,7 @@ const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const dbURI = "mongodb+srv://akiru01:imation98@cluster0.yirjs.mongodb.net/exerciseapp?retryWrites=true&w=majority";
+const dbURI = process.env.DB_URI;
 app.use(cors());
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
