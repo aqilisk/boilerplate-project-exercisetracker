@@ -98,13 +98,8 @@ app.get('/api/users/:_id/logs', async (req, res) => {
       logArray = logArray.slice(0, limit);
     }
 
-    const mapped = logArray.map(log => {
-      return { description: log.description, duration: log.duration, date: new Date(log.date).toDateString() }
-    })
-    console.log(mapped)
-
     const count = { count: logArray.length }
-    result.log = mapped;
+    result.log = logArray;
     const response = { ...result._doc, ...count }
     res.send(response);
   } catch (err) {
