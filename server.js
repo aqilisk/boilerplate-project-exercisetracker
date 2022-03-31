@@ -74,33 +74,31 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
   }
 })
 
+const findExerciseById = async (id) => {
+  const result = await User.findById(id, '_id username log');
+  return result;
+}
+
 app.get('/api/users/:_id/logs', async (req, res) => {
   const id = req.params._id;
-  let from = null;
-  let to = null;
-  let limit = null;
-  if (req.query.from || req.query.to || req.query.limit) {
-    console.log(req.query)
-    from = new Date(req.query.from).toDateString();
-    to = new Date(req.query.to).toDateString();
-    limit = parseInt(req.query.limit);
-  }
-  console.log(from, to, limit)
+  const { from, to, limit } = req.query;
   try {
-    let result;
-    if (from || to || limit) {
-      console.log('in limit')
-      result = await User.findById(id, '_id username log count')
-      .slice('log', limit)
-      .elemMatch('log', { log: { date: { $gte: from, $lte: to } } });
-    } else {
-      console.log('no limit')
-      result = await User.findById(id, '_id username log count');
+    let result = await findExerciseById(id);
+    let logArray = result.log;
+    if (from) {
+      logArray = logArray.filter(exe => new Date(exe.date) > new Date(from));
     }
 
-    const count = result.log.length;
-    const data = { ...result._doc, count }
-    res.json(data);
+    if (to) {
+      logArray = logArray.filter(exe => new Date(exe.date) < new Date(to));
+    }
+
+    if (limit) {
+      logArray = logArray.slice(0, limit);
+    }
+
+    result.log = logArray;
+    res.send(result)
   } catch (err) {
     res.json({ error: err.message })
   }
