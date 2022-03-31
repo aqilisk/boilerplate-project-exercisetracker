@@ -90,7 +90,7 @@ app.get('/api/users/:_id/logs', async (req, res) => {
   const { from, to, limit } = req.query;
   try {
     let result = await findExerciseById(id);
-    let logArray = result.log;
+    let logArray = await result.log;
     
     if (from) {
       logArray = logArray.filter(log => new Date(log.date) > new Date(from));
@@ -105,15 +105,13 @@ app.get('/api/users/:_id/logs', async (req, res) => {
     }
 
     const count = { count: logArray.length }
-    result.log = logArray;
+    result.log = await logArray;
     const response = { ...result._doc, ...count }
     res.send(response);
   } catch (err) {
     res.json({ error: err.message })
   }
 })
-
-
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
