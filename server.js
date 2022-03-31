@@ -97,8 +97,10 @@ app.get('/api/users/:_id/logs', async (req, res) => {
       logArray = logArray.slice(0, limit);
     }
 
+    const count = { count: logArray.length }
     result.log = logArray;
-    res.send(result)
+    const response = { ...result._doc, ...count }
+    res.send(response);
   } catch (err) {
     res.json({ error: err.message })
   }
