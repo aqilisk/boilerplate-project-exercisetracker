@@ -90,7 +90,7 @@ app.get('/api/users/:_id/logs', async (req, res) => {
   const { from, to, limit } = req.query;
   try {
     let result = await findExerciseById(id);
-    let logArray = await result.log;
+    let logArray = result.log;
     
     if (from) {
       logArray = logArray.filter(log => new Date(log.date) > new Date(from));
@@ -105,7 +105,7 @@ app.get('/api/users/:_id/logs', async (req, res) => {
     }
 
     const count = { count: logArray.length }
-    result.log = await logArray;
+    result.log = logArray;
     const response = { ...result._doc, ...count }
     res.send(response);
   } catch (err) {
