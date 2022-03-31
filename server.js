@@ -14,12 +14,18 @@ app.use(bodyParser.urlencoded({ extended: false }));
   console.log('connected to db')
 })();
 
+const subSchema = new mongoose.Schema({
+  description: String,
+  duration: Number,
+  date: String
+}, { _id: false })
+
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true
   },
-  log: [{ description: String, duration: Number, date: String }]
+  log: [subSchema]
 });
 
 const User = mongoose.model('User', userSchema);
@@ -87,11 +93,11 @@ app.get('/api/users/:_id/logs', async (req, res) => {
     let logArray = result.log;
     
     if (from) {
-      logArray = logArray.filter(exe => new Date(exe.date) > new Date(from));
+      logArray = logArray.filter(log => new Date(log.date) > new Date(from));
     }
 
     if (to) {
-      logArray = logArray.filter(exe => new Date(exe.date) < new Date(to));
+      logArray = logArray.filter(log => new Date(log.date) < new Date(to));
     }
 
     if (limit) {
